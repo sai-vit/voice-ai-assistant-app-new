@@ -90,8 +90,8 @@ const MicButton: React.FC = () => {
                     console.log('Deepgram result:', resultOne);
                     console.log('Deepgram result:', resultOne.message);
                     setScheduleMessage(resultOne.message); // Set the schedule message from API response
-                    if (resultOne.s3Url) {
-                        setScheduleAudioUrl(resultOne.s3Url);
+                    if (resultOne.audioUrl) {
+                        setScheduleAudioUrl(resultOne.audioUrl);
                     }
                     if (!response.ok) {
                         throw new Error('Failed to transcribe audio');
