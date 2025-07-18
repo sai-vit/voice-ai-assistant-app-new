@@ -15,6 +15,16 @@ const MicButton: React.FC = () => {
     const [audioError, setAudioError] = useState<string | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        if (scheduleAudioUrl && audioRef.current) {
+            audioRef.current.play().catch((err) => {
+                // Handle autoplay block or other errors
+                console.log('Autoplay prevented:', err);
+            });
+        }
+    }, [scheduleAudioUrl]);
 
     const handleStartRecording = async () => {
         try {
@@ -133,6 +143,7 @@ const MicButton: React.FC = () => {
             {scheduleAudioUrl && (
                 <>
                     <audio 
+                        ref={audioRef}
                         controls 
                         src={scheduleAudioUrl} 
                         className="mt-2" 
