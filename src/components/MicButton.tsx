@@ -11,6 +11,8 @@ const MicButton: React.FC = () => {
     const [listening, setListening] = useState(false);
     const [apiResult, setApiResult] = useState<string | null>(null);
     const [scheduleMessage, setScheduleMessage] = useState<string | null>(null);
+    const [scheduleAudioUrl, setScheduleAudioUrl] = useState<string | null>(null);
+    const [audioError, setAudioError] = useState<string | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
 
@@ -64,7 +66,7 @@ const MicButton: React.FC = () => {
                     setApiResult(transcript || (typeof result === 'string' ? result : JSON.stringify(result)));
                     console.log('Deepgram result:', result);
                     console.log('Deepgram result:', transcript);
-                    const responseOne = await fetch('https://y90nix3m30.execute-api.us-east-2.amazonaws.com/schedule', {
+                    const responseOne = await fetch('https://rmn2s0yqj7.execute-api.us-east-1.amazonaws.com/schedule', {
                         method: 'POST',
                         // headers: {
                         //     'Authorization': 'Token 521910b86c2d1de5c8b9651b12d61b465e423560',
@@ -78,6 +80,9 @@ const MicButton: React.FC = () => {
                     console.log('Deepgram result:', resultOne);
                     console.log('Deepgram result:', resultOne.message);
                     setScheduleMessage(resultOne.message); // Set the schedule message from API response
+                    if (resultOne.s3Url) {
+                        setScheduleAudioUrl(resultOne.s3Url);
+                    }
                     if (!response.ok) {
                         throw new Error('Failed to transcribe audio');
                     }
@@ -124,6 +129,21 @@ const MicButton: React.FC = () => {
                 <div className="mt-2 p-2 bg-blue-100 rounded text-blue-800 w-full break-words">
                     {scheduleMessage}
                 </div>
+            )}
+            {scheduleAudioUrl && (
+                <>
+                    <audio 
+                        controls 
+                        src={scheduleAudioUrl} 
+                        className="mt-2" 
+                        onError={() => setAudioError('Failed to load audio. The file may be unavailable or access is restricted.')}
+                    />
+                    {audioError && (
+                        <div className="mt-2 p-2 bg-red-100 rounded text-red-800 w-full break-words">
+                            {audioError}
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
